@@ -6,6 +6,8 @@ import Omer_Ran.Exceptions.InvalidInputException;
 import Omer_Ran.Exceptions.NotExistException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -40,9 +42,9 @@ public class Main {
 
     public static void main(String[] args) throws CloneNotSupportedException {
         s = new Scanner(System.in);
-        College college = loadData(s);
+        College college = loadData(s);                  // loading/creating college
 //        college.init();
-        run(college, s);
+        run(college, s);                                // run
         s.close();
     }
 
@@ -72,9 +74,7 @@ public class Main {
                     case 12 -> compareArticlesHolders(college);         // v
                     case 13 -> compareCommittees(college);              // v
                     case 14 -> cloneCommittee(college);
-                    default -> {
-                        System.out.println("Unexpected value!");        // v
-                    }
+                    default -> System.out.println("Unexpected value!"); // v
                 }
             } catch (InputMismatchException ime) {
                 System.out.println("Invalid input.");
@@ -84,23 +84,27 @@ public class Main {
     }
 
     private static void addLecturer(College college) throws CollegeExceptions {
+        // reading a lecturer name
         System.out.println(
-                "Enter lecturer name: \n" +                                         // reading a lecturer name
+                "Enter lecturer name: \n" +
                         "(enter '0' to return to menu)");
         String name = s.nextLine();
         if (name.equals("0")) {
             return;
         }
 
+        // reading a lecturer's ID
+        String id;
         System.out.println(
-                "Enter lecturer's ID: \n" +                                         // reading a lecturer's ID
+                "Enter lecturer's ID: \n" +
                         "(enter '0' to return to menu)");
-        String id = s.next();
+        id = s.next();
         if (id.equals("0")) {
             return;
         }
 
-        String major;                                                               // reading major of lecturer
+        // reading major of lecturer
+        String major;
         System.out.println(
                 "Enter lecturer's major: \n" +
                         "(enter '0' to return to menu)");
@@ -109,7 +113,8 @@ public class Main {
             return;
         }
 
-        float salary;                                                               // reading salary of lecturer
+        // reading salary of lecturer
+        float salary;
         System.out.println(
                 "Enter lecturer's salary: \n" +
                         "(enter '0' to return to menu)");
@@ -119,7 +124,8 @@ public class Main {
         }
         s.nextLine();
 
-        String departmentName;                                                      // reading the lecturer's department name
+        // reading the lecturer's department name
+        String departmentName;
         System.out.println(
                 "Enter lecturer's department (if not assigned to any - type 'none'): \n" +
                         "(enter '0' to return to menu)");
@@ -127,36 +133,45 @@ public class Main {
         if (departmentName.equals("0")) {
             return;
         }
-        Department department = new Department(departmentName);                     // creating a pending department
+        Department department = new Department(departmentName);     // creating a pending department
 
-        DegreeLevel degreeLevel = getDegreeLevel();                                // reading degree level of the lecturer
+        // reading degree level of the lecturer
+        DegreeLevel degreeLevel = getDegreeLevel();
         if (degreeLevel == null) {
-            return;
+            return;                 // if null - exit
         }
 
-        String[] articles = null;
-        if (degreeLevel == DegreeLevel.PROFESSOR || degreeLevel == DegreeLevel.DOCTOR) {        // reading articles
+        // DOCTOR/PROFESSOR:
+        // reading articles
+        ArrayList<String> articles = new ArrayList<>();
+        if (degreeLevel == DegreeLevel.PROFESSOR || degreeLevel == DegreeLevel.DOCTOR) {
             System.out.println("Please enter your published articles (separated with ', '): ");
             String input = s.nextLine();
-            articles = input.split(", ");
+            String[] splitInput = input.split(" ");
+            articles = new ArrayList<>(Arrays.asList(splitInput));
         }
+
+        // PROFESSOR:
+        // reading certifying institution
         String certifyingInst = null;
-        if (degreeLevel == DegreeLevel.PROFESSOR) {                                             // reading certifying institution
+        if (degreeLevel == DegreeLevel.PROFESSOR) {
             System.out.println("Please enter your certifying institution: ");
             certifyingInst = s.nextLine();
         }
 
+        // trying to add lecturer
         try {
-            college.addLecturer(name, id, degreeLevel, major, salary, department, articles, certifyingInst);    // trying to add lecturer
+            college.addLecturer(name, id, degreeLevel, major, salary, department, articles, certifyingInst);
         } catch (ExistException ise) {
-            printAddLecturerFailure(name, ise);                         // exist - EXCEPTION & repeat
+            printAddLecturerFailure(name, ise);     // exist - EXCEPTION & repeat
             addLecturer(college);
         } catch (InvalidInputException iie) {
-            printAddLecturerFailure(name, iie);                         // invalid salary OR department not exist -  EXCEPTION
+            printAddLecturerFailure(name, iie);     // invalid salary OR department not exist -  EXCEPTION
             return;
         }
 
-        System.out.println("The new lecturer '" + name + "' has been added successfully!");     // success
+        // success
+        System.out.println("The new lecturer '" + name + "' has been added successfully!");
     }
 
     private static void printAddLecturerFailure(String name, InvalidInputException iie) {
@@ -461,20 +476,26 @@ public class Main {
         DegreeLevel[] degreeLevels = DegreeLevel.values();
         int degreeChoice;
         while (true) {
+
+            // show options of degree levels
             System.out.println("Choose degree level: ");
             for (int i = 0; i < DegreeLevel.values().length; i++) {
                 System.out.println(i + 1 + ". " + DegreeLevel.values()[i]);
             }
             System.out.println("(enter '0' to return to menu)");
-            degreeChoice = s.nextInt();
-            if (degreeChoice == 0) {
-                s.nextLine();
-                return null;
-            } else if (1 <= degreeChoice && degreeChoice <= degreeLevels.length) {      // checking if choice is valid
-                s.nextLine();
-                return degreeLevels[degreeChoice - 1];
-            } else {
-                System.out.println("Invalid choice.");
+
+            // reading an option
+            try {
+                degreeChoice = s.nextInt();
+                if (degreeChoice == 0) {        // if 0 - exit
+                    s.nextLine();
+                    return null;
+                } else if (1 <= degreeChoice && degreeChoice <= degreeLevels.length) {      // checking if choice is valid
+                    s.nextLine();
+                    return degreeLevels[degreeChoice - 1];      // return degree level
+                }
+            } catch (InputMismatchException ime) {
+                System.out.println("Invalid choice.");      // EXCEPTION
             }
         }
     }
@@ -504,7 +525,7 @@ public class Main {
             college = College.loadData(collegeName);
         } catch (IOException | ClassNotFoundException e) {
             college = new College(collegeName);
-            System.out.println("Couldn't find a saved college file named: " + collegeName +"\n" +
+            System.out.println("Couldn't find a saved college file named: " + collegeName + "\n" +
                     "New college '" + collegeName + "' was created!");
         }
         return college;

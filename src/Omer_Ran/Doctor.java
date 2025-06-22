@@ -1,8 +1,10 @@
 package Omer_Ran;
 
+import java.util.ArrayList;
+
 public class Doctor extends Lecturer implements Comparable <Doctor> {
-    private String[] articles;
-    public Doctor(String name, String id, DegreeLevel degreeLevel, String major, float salary, Department department, String[] articles) {
+    private final ArrayList<String> articles;
+    public Doctor(String name, String id, DegreeLevel degreeLevel, String major, float salary, Department department, ArrayList<String> articles) {
         super(name, id, degreeLevel, major, salary, department);
         this.articles = articles;
     }
@@ -10,20 +12,18 @@ public class Doctor extends Lecturer implements Comparable <Doctor> {
     private String articlesDisplay() {
         sb = new StringBuilder();
         sb.append("[");
-        for (int i = 0; i < articles.length; i++) {
-            if (articles[i] != null) {
-                if (i == articles.length - 1) {
-                    sb.append(articles[i]);
-                } else {
-                    sb.append(articles[i]).append(",");
-                }
+        for (int i = 0; i < articles.size(); i++) {
+            if (i == articles.size() - 1) {
+                sb.append(articles.get(i));
+            } else {
+                sb.append(articles.get(i)).append(",");
             }
         }
         sb.append("]");
         return sb.toString();
     }
 
-    public String[] getArticles() {
+    public ArrayList<String> getArticles() {
         return articles;
     }
 
@@ -39,6 +39,6 @@ public class Doctor extends Lecturer implements Comparable <Doctor> {
 
     @Override
     public int compareTo(Doctor o) {
-        return Integer.compare(articles.length, o.articles.length);
+        return Integer.compare(articles.size(), o.articles.size());
     }
 }

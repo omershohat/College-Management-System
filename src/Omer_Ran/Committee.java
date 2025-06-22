@@ -85,7 +85,7 @@ public class Committee implements Nameable, Cloneable, Serializable {
         int sum = 0;
         for (Lecturer lecturer : lecturers) {
             if (lecturer instanceof Doctor lec) {
-                sum += lec.getArticles().length;
+                sum += lec.getArticles().size();
             }
         }
         return sum;

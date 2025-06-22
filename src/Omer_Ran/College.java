@@ -4,6 +4,7 @@ import Omer_Ran.Exceptions.*;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static Omer_Ran.DegreeLevel.*;
 import static Omer_Ran.Utils.findObject;
@@ -28,32 +29,41 @@ public class College implements Serializable {
         return committees;
     }
 
-    public void addLecturer(String name, String id, DegreeLevel degreeLevel, String major, float salary, Department department, String[] articles, String certifyingInst) throws CollegeExceptions {
+    public void addLecturer(String name, String id, DegreeLevel degreeLevel, String major, float salary, Department department, ArrayList<String> articles, String certifyingInst) throws CollegeExceptions {
         Lecturer lecturer;
+
+        // checking which lecturer to build
         if (articles == null) {
-            lecturer = new Lecturer(name, id, degreeLevel, major, salary, department);                              // checking which lecturer to build
+            lecturer = new Lecturer(name, id, degreeLevel, major, salary, department);      // Lecturer
         } else if (certifyingInst == null) {
-            lecturer = new Doctor(name, id, degreeLevel, major, salary, department, articles);
+            lecturer = new Doctor(name, id, degreeLevel, major, salary, department, articles);  // Doctor
         } else {
-            lecturer = new Professor(name, id, degreeLevel, major, salary, department, articles, certifyingInst);
+            lecturer = new Professor(name, id, degreeLevel, major, salary, department, articles, certifyingInst); // Professor
         }
 
-        if (lecturers.contains(lecturer)) {                                      // finding if lecturer already exists
+        // finding if lecturer already exists
+        if (lecturers.contains(lecturer)) {
             throw new ExistException(lecturer);                                                             // exists - EXCEPTION
         }
-        if (lecturer.getSalary() < 0) {                                                                     // checking if salary is valid
+
+        // checking if salary is valid
+        if (lecturer.getSalary() < 0) {
             throw new InvalidSalaryException(lecturer.getSalary());                                         // not valid - EXCEPTION
         }
-        Department dep = (Department) findObject(studyDepartments, lecturer.getDepartment());    // finding department exists
-        if (dep == null) {                                                                                  // if not and name is 'none' - department is null
+
+        // finding if department exists
+        Department dep = (Department) findObject(studyDepartments, lecturer.getDepartment());
+        if (dep == null) {                                              // if not and name is 'none' - department is null
             if (lecturer.getDepartment().getName().equals("none")) {
                 lecturer.setDepartment(null);
             } else {
-                throw new NotExistException(lecturer.getDepartment());                                      // else - EXCEPTION
+                throw new NotExistException(lecturer.getDepartment());  // else - EXCEPTION
             }
         } else {
-            lecturer.setDepartment(dep);
-        }                                                                                                   // if exists - set department to lecturer
+            lecturer.setDepartment(dep);        // if exists - set department to lecturer
+        }
+
+        // adding lecturer to ArrayList
         lecturers.add(lecturer);
     }
 
@@ -244,10 +254,6 @@ public class College implements Serializable {
         committees.add(comCloned);               // adding clone to committees
     }
 
-    public ArrayList<Department> getDepartments() {
-        return studyDepartments;
-    }
-
     public void saveData() throws IOException {
         ObjectOutputStream file = new ObjectOutputStream(new FileOutputStream(collegeName + ".bin"));
         file.writeObject(this);
@@ -263,19 +269,19 @@ public class College implements Serializable {
         Department kokod = new Department("kokod", 12);
         studyDepartments.add(kokod);
 
-        Doctor omer = new Doctor("omer", "315854091", DOCTOR, "ART", 54.1f, studyDepartments.get(0), new String[]{"1", "2", "3", "4", "5"});
+        Doctor omer = new Doctor("omer", "315854091", DOCTOR, "ART", 54.1f, studyDepartments.get(0), new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5")));
         omer.setDepartment(kokod);
         lecturers.add(omer);
 
-        Professor elon = new Professor("elon", "322819123", PROFESSOR, "KAKI", 500.67f, studyDepartments.get(0), new String[]{"1", "2"}, "police");
+        Professor elon = new Professor("elon", "322819123", PROFESSOR, "KAKI", 500.67f, studyDepartments.get(0), new ArrayList<>(Arrays.asList("1", "2")), "police");
         elon.setDepartment(kokod);
         lecturers.add(elon);
 
-        Doctor ran = new Doctor("ran", "3151", MASTERS, "ART", 32.3f, studyDepartments.get(0), new String[]{"1", "2"});
+        Doctor ran = new Doctor("ran", "3151", MASTERS, "ART", 32.3f, studyDepartments.get(0), new ArrayList<>(Arrays.asList("1", "2")));
         ran.setDepartment(kokod);
         lecturers.add(ran);
 
-        Doctor koz = new Doctor("koz", "12345", DOCTOR, "ART", 36.31f, studyDepartments.get(0), new String[]{"1", "2"});
+        Doctor koz = new Doctor("koz", "12345", DOCTOR, "ART", 36.31f, studyDepartments.get(0), new ArrayList<>(Arrays.asList("1", "2")));
         koz.setDepartment(kokod);
         lecturers.add(koz);
 
@@ -292,7 +298,5 @@ public class College implements Serializable {
 
         Department lolod = new Department("lolod", 12);
         studyDepartments.add(lolod);
-
-
     }
 }
